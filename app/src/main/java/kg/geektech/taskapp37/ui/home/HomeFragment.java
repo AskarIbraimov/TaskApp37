@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,17 +19,35 @@ import androidx.navigation.Navigation;
 
 import kg.geektech.taskapp37.R;
 import kg.geektech.taskapp37.databinding.FragmentHomeBinding;
+import kg.geektech.taskapp37.intarfaces.OnItemClickListener;
 import kg.geektech.taskapp37.models.News;
 
 public class HomeFragment extends Fragment {
 
-    private HomeViewModel homeViewModel;
+    private NewsAdapter adapter;
     private FragmentHomeBinding binding;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        adapter = new NewsAdapter();
+        adapter.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onClick(int pos) {
+                News news = adapter.getItem(pos);
+                Toast.makeText(requireContext(), news.getTitle(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onLongClick(int pos) {
+
+            }
+        });
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
+
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -41,9 +60,22 @@ public class HomeFragment extends Fragment {
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
                 News news = (News) result.getSerializable("news");
                 Log.e("Home","text" + news.getTitle());
+                adapter.addItem(news);
             }
         });
         return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initList();
+    }
+
+    private void initList() {
+
+        binding.recyclerView.setAdapter(adapter);
+
     }
 
     private void openFragment(){
