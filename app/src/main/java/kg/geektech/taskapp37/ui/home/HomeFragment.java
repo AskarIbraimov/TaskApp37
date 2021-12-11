@@ -1,5 +1,8 @@
 package kg.geektech.taskapp37.ui.home;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.Observer;
@@ -40,6 +44,17 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onLongClick(int pos) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                builder.setMessage("Do you want to delete");
+                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        News news = adapter.getItem(pos);
+                        adapter.removeItem(news,pos);
+                    }
+                });
+                builder.setNegativeButton("No",null);
+                builder.show();
 
             }
         });
@@ -80,8 +95,7 @@ public class HomeFragment extends Fragment {
 
     private void openFragment(){
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_activity_main);
-        navController.navigate(R.id.newsFragment
-        );
+        navController.navigate(R.id.newsFragment);
     }
 
     @Override

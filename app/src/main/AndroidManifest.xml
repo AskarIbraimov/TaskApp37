@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="kg.geektech.taskapp37">
+    package="kg.geektech.taskapp37"
+    >
 
+    <uses-permission android:name="android.permission.ACTION_OPEN_DOCUMENT"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<!--    <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />-->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
