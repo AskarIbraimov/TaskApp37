@@ -1,5 +1,6 @@
-package kg.geektech.taskapp37;
+package kg.geektech.taskapp37.ui.boardFragment;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,21 +8,25 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import kg.geektech.taskapp37.Prefs;
+import kg.geektech.taskapp37.R;
 import kg.geektech.taskapp37.databinding.ItemBoardBinding;
 import kg.geektech.taskapp37.intarfaces.OnBoardStartClickListener;
 
 
-public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> {
+public class  BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> {
 
     private String[] titles = new String[]{"Салам", "Привет", "Hello"};
     private String [] desc = new String []{"Дубровник","Торонто","Токио"};
     private int [] image = new int[]{R.drawable.dubrovnic,R.drawable.toronto,R.drawable.tokyo};
-    public OnBoardStartClickListener clickListener;
+    public OnBoardStartClickListener  clickListener;
+    private Context context;
 
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        this.context = parent.getContext();
         return new ViewHolder(ItemBoardBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
     }
 
@@ -48,6 +53,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.ViewHolder> 
             binding.btnStart.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    new Prefs(context ).saveBoardState();
                     clickListener.onStartClick();
 
                 }

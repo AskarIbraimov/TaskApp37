@@ -6,6 +6,9 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -21,6 +24,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import java.util.List;
+
+import kg.geektech.taskapp37.App;
 import kg.geektech.taskapp37.R;
 import kg.geektech.taskapp37.databinding.FragmentHomeBinding;
 import kg.geektech.taskapp37.intarfaces.OnItemClickListener;
@@ -34,12 +40,17 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
         adapter = new NewsAdapter();
+        List<News> list = App.getInstance().getDatabase().newsDao().getAll();
+        adapter.addItems(list);
         adapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onClick(int pos) {
                 News news = adapter.getItem(pos);
-                Toast.makeText(requireContext(), news.getTitle(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(requireContext(),news.getTitle() , Toast.LENGTH_SHORT).show();
+                openFragment(news);
             }
 
             @Override
@@ -50,15 +61,17 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         News news = adapter.getItem(pos);
-                        adapter.removeItem(news,pos);
+                        App.getInstance().getDatabase().newsDao().delete(news);
+                        adapter.removeItem(news, pos);
                     }
                 });
-                builder.setNegativeButton("No",null);
+                builder.setNegativeButton("No", null);
                 builder.show();
 
             }
         });
     }
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -67,15 +80,24 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        binding.fab.setOnClickListener(v ->{
-            openFragment();
+        binding.fab.setOnClickListener(v -> {
+            openFragment(null);
         });
-        getParentFragmentManager().setFragmentResultListener("rk_news", getViewLifecycleOwner(), new FragmentResultListener() {
+        getParentFragmentManager().setFragmentResultListener("rk_news_add", getViewLifecycleOwner(), new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
                 News news = (News) result.getSerializable("news");
-                Log.e("Home","text" + news.getTitle());
+                Log.e("Home", "text" + news.getTitle());
                 adapter.addItem(news);
+            }
+        });
+        getParentFragmentManager().setFragmentResultListener("rk_news_update" +
+                "", getViewLifecycleOwner(), new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                News news = (News) result.getSerializable("news");
+                Log.e("Home", "text" + news.getTitle());
+                adapter.updateItem(news);
             }
         });
         return root;
@@ -93,14 +115,36 @@ public class HomeFragment extends Fragment {
 
     }
 
-    private void openFragment(){
+    private void openFragment(News news) {
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_activity_main);
-        navController.navigate(R.id.newsFragment);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("news", news);
+        navController.navigate(R.id.newsFragment, bundle);
+
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.home, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_sort) {
+            getSortedList();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void getSortedList() {
+        List<News> list = App.getInstance().getDatabase().newsDao().getAllSortedByTitle();
+        adapter.addItems(list);
     }
 }

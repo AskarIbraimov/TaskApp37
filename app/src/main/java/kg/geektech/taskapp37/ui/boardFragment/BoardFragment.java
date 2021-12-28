@@ -1,4 +1,4 @@
-package kg.geektech.taskapp37;
+package kg.geektech.taskapp37.ui.boardFragment;
 
 import android.os.Bundle;
 
@@ -8,16 +8,17 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.navigation.ui.NavigationUI;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import kg.geektech.taskapp37.Prefs;
+import kg.geektech.taskapp37.R;
 import kg.geektech.taskapp37.databinding.FragmentBoardBinding;
-import kg.geektech.taskapp37.databinding.FragmentNewsBinding;
 import kg.geektech.taskapp37.intarfaces.OnBoardStartClickListener;
+import kg.geektech.taskapp37.ui.boardFragment.BoardAdapter;
 
 public class BoardFragment extends Fragment {
 
@@ -81,7 +82,7 @@ public class BoardFragment extends Fragment {
     private void close() {
         Prefs prefs = new Prefs(requireContext());
         prefs.saveBoardState();
-        NavController navController = Navigation.findNavController(requireActivity(),R.id.nav_host_fragment_activity_main);
+        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_activity_main);
         navController.navigateUp();
     }
 }

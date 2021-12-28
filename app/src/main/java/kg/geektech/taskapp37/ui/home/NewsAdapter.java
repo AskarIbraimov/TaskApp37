@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import kg.geektech.taskapp37.databinding.ItemNewsBinding;
 import kg.geektech.taskapp37.intarfaces.OnItemClickListener;
@@ -28,16 +29,16 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(ItemNewsBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false));
+        binding = ItemNewsBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.onBind(list.get(position),onItemClickListener);
-        if (position % 2 == 0){
+        holder.onBind(list.get(position), onItemClickListener);
+        if (position % 2 == 0) {
             binding.textTitle.setBackgroundColor(Color.GRAY);
-
-        }else {
+        } else {
             binding.textTitle.setBackgroundColor(Color.WHITE);
         }
     }
@@ -48,10 +49,20 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     }
 
     public void addItem(News news) {
-
-        list.add(0,news);
-
+        list.add(0, news);
         notifyItemInserted(0);
+    }
+
+    public void addItems(List<News> list) {
+        this.list.clear();
+        this.list.addAll(list);
+        notifyDataSetChanged();
+    }
+
+    public void updateItem(News news) {
+        int index = list.indexOf(news);
+        list.set(index, news);
+        notifyItemChanged(index);
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -62,20 +73,23 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         return list.get(pos);
     }
 
+
     public void removeItem(News news, int p) {
         this.list.remove(news);
         notifyItemRemoved(p);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-//        private ItemNewsBinding binding;
-        public ViewHolder( ItemNewsBinding itemView) {
-            super(itemView.getRoot());
-            binding = itemView;
+
+        private ItemNewsBinding binding;
+
+        public ViewHolder(ItemNewsBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    onItemClickListener.onClick(getAdapterPosition());
                 }
             });
             binding.getRoot().setOnLongClickListener(new View.OnLongClickListener() {
